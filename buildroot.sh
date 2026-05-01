@@ -111,7 +111,7 @@ install_dump1090() {
 
 install_fr24feed() {
 	pushd $srcroot
-	curl -fsSL https://repo-feed.flightradar24.com/rpi_binaries/fr24feed_1.0.54-0_arm64.tgz | \
+	curl -fsSL https://repo-feed.flightradar24.com/rpi_binaries/fr24feed_1.0.56-0_arm64.tgz | \
 		tar zx --strip-components=1 fr24feed_arm64/fr24feed
 	mkdir -p $buildroot/usr/local/bin
 	install -m 755 fr24feed $buildroot/usr/local/bin
