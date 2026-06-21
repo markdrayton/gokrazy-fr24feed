@@ -2,6 +2,8 @@
 
 set -euo pipefail
 
+FR24_VERSION=1.0.57
+
 if [ ! -f /.dockerenv ]; then
     echo "this should only be run from a Docker container" >&2
     exit 1
@@ -35,7 +37,7 @@ install_dump1090() {
 
 install_fr24feed() {
     cd $(mktemp -d $buildroot/tmp.XXXXXX)
-	curl -fsSL https://repo-feed.flightradar24.com/rpi_binaries/fr24feed_1.0.57-0_arm64.tgz | \
+	curl -fsSL https://repo-feed.flightradar24.com/rpi_binaries/fr24feed_${FR24_VERSION}-0_arm64.tgz | \
 		tar zx --strip-components=1 fr24feed_arm64/fr24feed
 	mkdir -p $buildroot/usr/local/bin
 	install -m 755 fr24feed $installroot/usr/local/bin
