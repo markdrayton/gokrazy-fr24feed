@@ -43,7 +43,7 @@ func main() {
 			fatal("shlex.Split(%q): %s", unparsed, err)
 		}
 		if len(args) < 1 {
-			fatal("shlex.Split(%q) produced zero-length output")
+			fatal("shlex.Split(%q) produced zero-length output", unparsed)
 		}
 
 		exec(args)
