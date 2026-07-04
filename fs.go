@@ -14,11 +14,11 @@ import (
 // prepareRootFS prepares a root directory for the new process.
 func prepareRootFS(rootPath string, rootTar string, iniFile string) error {
 	if err := unpackRoot(rootPath, rootTar); err != nil {
-		return err
+		return fmt.Errorf("unpacking root: %w", err)
 	}
 
 	if err := copyIni(rootPath, iniFile); err != nil {
-		return err
+		return fmt.Errorf("copying ini: %w", err)
 	}
 
 	return nil
@@ -29,7 +29,6 @@ func unpackRoot(rootPath string, rootTar string) error {
 	if err != nil {
 		return err
 	}
-
 	defer f.Close()
 
 	tr := tar.NewReader(f)
@@ -56,9 +55,12 @@ func unpackRoot(rootPath string, rootTar string) error {
 		if err != nil {
 			return err
 		}
+
 		if _, err := io.Copy(out, tr); err != nil {
+			out.Cleanup() // Clean up partial files on error
 			return err
 		}
+
 		if err := out.CloseAtomicallyReplace(); err != nil {
 			return err
 		}
@@ -75,81 +77,62 @@ func copyIni(rootPath string, iniFile string) error {
 	defer f.Close()
 
 	dest := filepath.Join(rootPath, "/etc/fr24feed.ini")
-
 	if err := os.MkdirAll(filepath.Dir(dest), 0700); err != nil {
 		return err
 	}
 
-	// defer close
-	out, err := renameio.NewPendingFile(dest, renameio.WithStaticPermissions(0700))
+	out, err := renameio.NewPendingFile(dest, renameio.WithStaticPermissions(0600))
 	if err != nil {
 		return err
 	}
+
 	if _, err := io.Copy(out, f); err != nil {
-		return err
-	}
-	if err := out.CloseAtomicallyReplace(); err != nil {
+		out.Cleanup()
 		return err
 	}
 
-	return nil
+	return out.CloseAtomicallyReplace()
 }
 
 func mountProc(root string) error {
 	target := filepath.Join(root, "/proc")
-
 	if err := os.MkdirAll(target, 0755); err != nil {
-		return fmt.Errorf("mkdir(%s): %v", target, err)
+		return err
 	}
-
-	if err := syscall.Mount("proc", target, "proc", 0, ""); err != nil {
-		return fmt.Errorf("mount(%s): %v", target, err)
-	}
-
-	return nil
+	return syscall.Mount("proc", target, "proc", 0, "")
 }
 
 func mountDev(root string) error {
 	target := filepath.Join(root, "/dev")
-
 	if err := os.MkdirAll(target, 0755); err != nil {
-		return fmt.Errorf("mkdir(%s): %v", target, err)
+		return err
 	}
-
-	if err := syscall.Mount("/dev", target, "", syscall.MS_BIND|syscall.MS_REC, ""); err != nil {
-		return fmt.Errorf("mount(%s): %v", target, err)
-	}
-
-	return nil
+	return syscall.Mount("/dev", target, "", syscall.MS_BIND|syscall.MS_REC, "")
 }
 
 func pivotRoot(root string) error {
 	putold := filepath.Join(root, "/.pivot_root")
 
 	if err := syscall.Mount(root, root, "", syscall.MS_BIND|syscall.MS_REC, ""); err != nil {
-		return fmt.Errorf("mount(%s): %s", root, err)
+		return err
 	}
 
 	if err := os.MkdirAll(putold, 0700); err != nil {
-		return fmt.Errorf("mkdir(%s): %s", putold, err)
+		return err
 	}
 
 	if err := syscall.PivotRoot(root, putold); err != nil {
-		return fmt.Errorf("pivot_root(%s, %s): %s", root, putold, err)
+		return err
 	}
 
 	if err := os.Chdir("/"); err != nil {
-		return fmt.Errorf("chdir(/): %s", err)
+		return err
 	}
 
 	putold = "/.pivot_root"
 	if err := syscall.Unmount(putold, syscall.MNT_DETACH); err != nil {
-		return fmt.Errorf("umount(%s): %s", putold, err)
+		return err
 	}
 
-	if err := os.RemoveAll(putold); err != nil {
-		return fmt.Errorf("rmdir(%s): %s", putold, err)
-	}
-
-	return nil
+	return os.RemoveAll(putold)
 }
