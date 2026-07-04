@@ -9,12 +9,16 @@ tools it calls.
 
 ## Installation
 
+Deploy a new instance (here named `fr24`) with the
+[quickstart guide](https://gokrazy.org/quickstart/index.html) then install
+`gokrazy-fr24feed` as follows
+
 ```
-$ gok add github.com/0xERR0R/blocky                  # fr24feed needs to resolve an NTP server
-$ gok add github.com/markdrayton/gokrazy-fr24feed
+$ gok -i fr24 add github.com/0xERR0R/blocky                  # fr24feed needs to resolve an NTP server
+$ gok -i fr24  add github.com/markdrayton/gokrazy-fr24feed
 ```
 
-Configure modules:
+Configure modules at `~/gokrazy/fr24/config.json`:
 
 ```
 {
@@ -46,7 +50,7 @@ Configure modules:
 Configure `fr24feed`:
 
 ```
-$ cat fr24feed.ini
+$ cat ~/gokrazy/fr24/fr24feed.ini
 receiver="dvbt"
 fr24key="$yourkey"
 bs="yes"
@@ -59,7 +63,7 @@ path="/usr/local/bin/dump1090"
 Configure `blocky` with something like:
 
 ```
-$ cat blocky.config.yml
+$ cat ~/gokrazy/fr24/blocky.config.yml
 upstream:
   default:
     - https://security.cloudflare-dns.com/dns-query
@@ -69,8 +73,8 @@ ports:
   http: 4000
 ```
 
-And update:
+Deploy:
 
 ```
-$ gok update
+$ gok -i fr24 update
 ```
