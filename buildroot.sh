@@ -7,6 +7,13 @@ if [ $(git rev-parse --show-toplevel) != $(pwd) ]; then
     exit 1
 fi
 
+FR24FEED_VERSION=$1
+
+if [ -z "$FR24FEED_VERSION" ]; then
+    echo "usage: $(basename $0) version" >&2
+    exit 1
+fi
+
 mkdir _build
 
 cleanup() {
@@ -18,6 +25,6 @@ trap cleanup INT TERM EXIT
 GOARCH=arm64 go build -o _build/bash cmd/bash/bash.go
 
 docker build -t gokrazy-fr24feed-build .
-docker run --rm -v $(pwd)/_build:/tmp/buildresult -u $(id -u):$(id -g) gokrazy-fr24feed-build
+docker run --rm -v $(pwd)/_build:/tmp/buildresult -u $(id -u):$(id -g) gokrazy-fr24feed-build $FR24FEED_VERSION
 
 cp _build/extrafiles_arm64.tar _gokrazy

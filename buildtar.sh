@@ -2,10 +2,15 @@
 
 set -euo pipefail
 
-FR24FEED_VERSION=1.0.57-0
-
 if [ ! -f /.dockerenv ]; then
     echo "this should only be run from a Docker container" >&2
+    exit 1
+fi
+
+FR24FEED_VERSION=$1
+
+if [ -z "$FR24FEED_VERSION" ]; then
+    echo "usage: $(basename $0) version" >&2
     exit 1
 fi
 
@@ -16,7 +21,7 @@ installroot=/tmp/installroot
 mkdir -p $installroot
 
 cleanup() {
-	rm -rf $buildroot
+    rm -rf $buildroot
     rm -rf $installroot
 }
 
