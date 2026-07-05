@@ -10,9 +10,6 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
-        with:
-          token: ${{ secrets.ACCESS_TOKEN }}
-          submodules: true
       - name: Fetch latest fr24feed version string
         id: version
         run: |
