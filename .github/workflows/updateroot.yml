@@ -1,7 +1,7 @@
 name: Build new root filesystem
 on:
   schedule:
-    - cron: "39 8 * * 6"
+    - cron: "35 6 * * 0"
 
 jobs:
   reminder:
