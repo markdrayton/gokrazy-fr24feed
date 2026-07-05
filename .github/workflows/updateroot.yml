@@ -2,11 +2,15 @@ name: Build new root filesystem
 on:
   schedule:
     - cron: "35 6 * * 0"
+  workflow_dispatch: 
 
 jobs:
   reminder:
     runs-on: ubuntu-latest
     steps:
+      - name: Fetch latest version
+        run: |
+          curl --silent -o - https://repo-feed.flightradar24.com/CHANGELOG.md | awk '/^#\[/ { print $1 }' | grep -o -m 1 '[0-9\.-]\+' >> $FR24FEED_VERSION
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
@@ -14,4 +18,11 @@ jobs:
           submodules: true
       - name: Update root filesystem
         run: |
-          ./updateroot.sh
+          ./buildroot.sh $FR24FEED_VERSION
+      - name: Commit changes
+        run: |
+          if [ $(git status --porcelain | wc -l) -gt 0 ]; then
+            git add .
+            git commit -m "Update to fr24feed $FR24FEED_VERSION"
+            git push
+          fi
