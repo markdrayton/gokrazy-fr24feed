@@ -14,7 +14,7 @@ jobs:
         id: version
         run: |
           fr24feed_version=$(curl --silent -o - https://repo-feed.flightradar24.com/CHANGELOG.md | awk '/^#\[/ { print $1 }' | grep -o -m 1 '[0-9\.-]\+')
-          echo "fr24feed_version=$fr24feed_version) >> $GITHUB_OUTPUT
+          echo "fr24feed_version=$fr24feed_version)" >> $GITHUB_OUTPUT
       - name: Update root filesystem
         run: |
           ./buildroot.sh ${{ steps.version.outputs.fr24feed_version }}
