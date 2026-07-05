@@ -21,6 +21,8 @@ jobs:
       - name: Commit changes
         run: |
           if [ $(git status --porcelain | wc -l) -gt 0 ]; then
+            git config --global user.email "mdrayton@gmail.com"
+            git config --global user.name "Mark Drayton"
             git add .
             git commit -m "Update to fr24feed ${{ steps.version.outputs.fr24feed_version }}"
             git push
