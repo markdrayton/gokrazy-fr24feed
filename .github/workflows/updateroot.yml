@@ -1,0 +1,17 @@
+name: Build new root filesystem
+on:
+  schedule:
+    - cron: "0 8 * * 6"
+
+jobs:
+  reminder:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.ACCESS_TOKEN }}
+          submodules: true
+      - name: Update root filesystem
+        run: |
+          ./updateroot.sh
