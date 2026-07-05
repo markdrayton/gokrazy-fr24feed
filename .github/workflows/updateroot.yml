@@ -5,24 +5,26 @@ on:
   workflow_dispatch: 
 
 jobs:
-  reminder:
+  updateroot:
     runs-on: ubuntu-latest
     steps:
-      - name: Fetch latest version
-        run: |
-          curl --silent -o - https://repo-feed.flightradar24.com/CHANGELOG.md | awk '/^#\[/ { print $1 }' | grep -o -m 1 '[0-9\.-]\+' >> $FR24FEED_VERSION
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
           token: ${{ secrets.ACCESS_TOKEN }}
           submodules: true
+      - name: Fetch latest fr24feed version string
+        id: version
+        run: |
+          fr24feed_version=$(curl --silent -o - https://repo-feed.flightradar24.com/CHANGELOG.md | awk '/^#\[/ { print $1 }' | grep -o -m 1 '[0-9\.-]\+')
+          echo "fr24feed_version=$fr24feed_version) >> $GITHUB_OUTPUT
       - name: Update root filesystem
         run: |
-          ./buildroot.sh $FR24FEED_VERSION
+          ./buildroot.sh ${{ steps.version.outputs.fr24feed_version }}
       - name: Commit changes
         run: |
           if [ $(git status --porcelain | wc -l) -gt 0 ]; then
             git add .
-            git commit -m "Update to fr24feed $FR24FEED_VERSION"
+            git commit -m "Update to fr24feed ${{ steps.version.outputs.fr24feed_version }}"
             git push
           fi
