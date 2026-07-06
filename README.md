@@ -6,9 +6,9 @@ Run `fr24feed` on a [gokrazy](http://gokrazy.org/) appliance. `fr24feed`
 is statically compiled (✅) but getting it running with no userspace requires a
 bit of a dance -- the `fr24feed` binary assumes it is running under Raspbian
 and shells out to `bash`, `pgrep`, and other tools that aren't present in a
-userspace-free gokrazy appliance. To make things work, the `fr24feed` process
-runs in a separate mount namespace under `/run/fr24feed` containing dummy
-versions of the tools it calls.
+gokrazy appliance. To make things work, the `fr24feed` process runs in a
+separate mount namespace under `/run/fr24feed` containing dummy versions of the
+tools it calls.
 
 ## Limitations
 
