@@ -9,9 +9,9 @@ tools it calls.
 
 ## Installation
 
-Deploy a new instance (here named `fr24`) with the
+Set up a new instance (here named `fr24`) with the
 [quickstart guide](https://gokrazy.org/quickstart/index.html) then install
-`gokrazy-fr24feed` as follows
+`gokrazy-fr24feed` as follows:
 
 ```
 $ gok -i fr24 add github.com/0xERR0R/blocky                  # fr24feed needs to resolve an NTP server
@@ -77,4 +77,10 @@ Deploy:
 
 ```
 $ gok -i fr24 update
+```
+
+To update the system:
+
+```
+$ gok -i fr24 get --update_all && gok -i fr24 update
 ```
