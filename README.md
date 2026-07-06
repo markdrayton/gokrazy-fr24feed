@@ -1,11 +1,18 @@
 # markdrayton/gokrazy-fr24feed
 
+<img width="1552" height="987" alt="screenshot" src="https://github.com/user-attachments/assets/1691a384-6a27-4d07-bd78-69391f2a58cb" />
+
 Run `fr24feed` on a [gokrazy](http://gokrazy.org/) appliance. It's a bit of a
 hack -- the `fr24feed` binary assumes it is running under Raspbian and shells
 out to `bash`, `pgrep`, and other tools that aren't present in a userspace-free
 gokrazy appliance. To make things work, the `fr24feed` process runs in a
 separate mount namespace under `/run/fr24feed` containing dummy versions of the
 tools it calls.
+
+## Limitations
+
+The "show logs" link on the `fr24feed` web UI doesn't work. The process
+stderr/stdout are shown on the gokrazy UI, though.
 
 ## Installation
 
@@ -14,8 +21,9 @@ Set up a new instance (here named `fr24`) with the
 `gokrazy-fr24feed` as follows:
 
 ```
-$ gok -i fr24 add github.com/0xERR0R/blocky                  # fr24feed needs to resolve an NTP server
-$ gok -i fr24  add github.com/markdrayton/gokrazy-fr24feed
+# fr24feed needs to resolve an NTP server
+$ gok -i fr24 add github.com/0xERR0R/blocky
+$ gok -i fr24 add github.com/markdrayton/gokrazy-fr24feed
 ```
 
 Configure modules at `~/gokrazy/fr24/config.json`:
