@@ -19,10 +19,9 @@ jobs:
           echo "fr24feed_version=$fr24feed_version" >> $GITHUB_OUTPUT
       - name: Update root filesystem
         run: |
-          ./buildroot.sh ${{ steps.version.outputs.fr24feed_version }}
-      - name: Commit changes
-        run: |
-          if [ $(git status --porcelain | wc -l) -gt 0 ]; then
+          if [ $(cat fr24feed-version.txt) != "${{ steps.version.outputs.fr24feed_version }}" ]; then
+            echo "${{ steps.version.outputs.fr24feed_version }}" > fr24feed-version.txt
+            ./buildroot.sh ${{ steps.version.outputs.fr24feed_version }}
             git config --global user.email "mdrayton@gmail.com"
             git config --global user.name "Mark Drayton"
             git add .
